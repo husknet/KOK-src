@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
+COPY package.json  ./
 RUN npm ci
 COPY . .
 RUN npm run build
