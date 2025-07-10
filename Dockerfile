@@ -8,24 +8,22 @@ RUN apt-get update && apt-get install -y \
   libgbm1 libxrandr2 libxtst6 libu2f-udev wget --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
-# Skip Puppeteer’s own Chromium download
+# Tell Puppeteer to skip its own Chromium download
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /usr/src/app
 
-# Only package.json is needed here
+# Install only from package.json
 COPY package.json ./
-
-# Install dependencies (no lockfile required)
 RUN npm install --production
 
-# Copy the rest of the source
+# Copy in your source & next.config.js
 COPY . .
 
-# Build your Next.js app
+# Build your Next.js app (webpack externals in next.config.js will keep Puppeteer out of the bundle)
 RUN npm run build
 
-# Expose and start
+# Expose and start via NPM script (which is "next start -p $PORT")
 ENV PORT ${PORT:-3000}
 EXPOSE $PORT
-CMD ["npm", "start", "-p", "$PORT"]
+CMD npm start
